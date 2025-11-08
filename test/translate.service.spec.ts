@@ -72,7 +72,7 @@ describe('TranslateService', () => {
       });
 
       const result = await translateService.translateObject(user);
-
+      console.log('result', result);
       expect(result.statusName).toBe('正常');
       expect(result.genderName).toBe('男');
       expect(result.id).toBe(1);
@@ -97,12 +97,12 @@ describe('TranslateService', () => {
       const user = new UserDto({
         id: 1,
         name: '王五',
-        status: null,
+        status: undefined,
         genderCode: undefined
       });
 
       const result = await translateService.translateObject(user);
-
+      console.log('result', result);
       expect(result.statusName).toBeUndefined();
       expect(result.genderName).toBeUndefined();
     });
@@ -154,8 +154,8 @@ describe('TranslateService', () => {
 
       const results = await translateService.translateArray(mixedData);
 
-      expect(results[0].statusName).toBe('正常');
-      expect(results[0].genderName).toBe('男');
+      expect((results[0] as UserDto).statusName).toBe('正常');
+      expect((results[0] as UserDto).genderName).toBe('男');
       expect((results[1] as ProductDto).categoryName).toBe('电子产品');
       expect((results[1] as ProductDto).statusName).toBe('上架');
     });
