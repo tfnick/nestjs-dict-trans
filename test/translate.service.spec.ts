@@ -72,7 +72,6 @@ describe('TranslateService', () => {
       });
 
       const result = await translateService.translateObject(user);
-      console.log('result', result);
       expect(result.statusName).toBe('正常');
       expect(result.genderName).toBe('男');
       expect(result.id).toBe(1);
@@ -102,7 +101,6 @@ describe('TranslateService', () => {
       });
 
       const result = await translateService.translateObject(user);
-      console.log('result', result);
       expect(result.statusName).toBeUndefined();
       expect(result.genderName).toBeUndefined();
     });
