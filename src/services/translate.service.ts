@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DictService } from './dict.service';
 import { TRANSLATE_METADATA_KEY } from '../decorators/translate.decorator';
+import {DEFAULT_TRANSLATE_OPTIONS} from "../interfaces/dict.interface";
 
 @Injectable()
 export class TranslateService {
@@ -19,7 +20,9 @@ export class TranslateService {
       const codeValue = (obj as any)[codeField];
       
       if (codeValue !== undefined && codeValue !== null) {
-        const translatedName = await this.dictService.getTextByCode(dictType, codeValue, dictNameField);
+        // 如果没有指定dictNameField，则从字典定义中获取默认的nameField
+        const targetField = dictNameField || this.dictService.getDefinition(dictType)?.nameField || DEFAULT_TRANSLATE_OPTIONS.dictNameField;
+        const translatedName = await this.dictService.getTextByCode(dictType, codeValue, targetField);
         (obj as any)[nameField] = translatedName;
       }
     }

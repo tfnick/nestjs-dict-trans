@@ -15,6 +15,9 @@ export class DictService {
     this.dictDefinitions.set(definition.key, definition);
   }
 
+  getDefinition(key: string): DictDefinition | undefined {
+    return this.dictDefinitions.get(key);
+  }
   /**
    * 获取字典数据
    */

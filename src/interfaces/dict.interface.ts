@@ -20,5 +20,10 @@ export interface TranslateOptions {
   codeField: string;
   nameField: string; // 默认设置对象的nameField字段（to）
   cacheKey?: string;
-  dictNameField?: 'name'; // 默认取字典的name字段（from）
+  dictNameField?: string; // 默认取字典的name字段（from），默认值为'name'
 }
+
+
+export const DEFAULT_TRANSLATE_OPTIONS = {
+  dictNameField: 'name',
+} as const;
