@@ -65,6 +65,15 @@ export class DictService {
     return item ? item[nameField] : '';
   }
 
+  async getValueByCode(key: string, code: string | number, targetField: string = 'name'): Promise<any> {
+    const dictData = await this.getDictData(key);
+    const definition = this.dictDefinitions.get(key);
+    const codeField = definition?.codeField || 'code';
+
+    const item = dictData.find(d => d[codeField] === code);
+    return item ? item[targetField] : '';
+  }
+
   /**
    * 刷新字典缓存
    */

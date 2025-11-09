@@ -47,4 +47,8 @@ export class TranslateService {
   async translateField(dictType: string, code: string | number): Promise<string> {
     return this.dictService.getNameByCode(dictType, code);
   }
+
+  async translateFieldTo(dictType: string, code: string | number, targetField: string): Promise<any> {
+    return this.dictService.getValueByCode(dictType, code, targetField);
+  }
 }
