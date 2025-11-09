@@ -16,11 +16,11 @@ export interface DictDefinition {
 }
 
 export interface TranslateOptions {
-  dictType: string;
-  codeField: string;
-  nameField: string; // 默认设置对象的nameField字段（to）
+  dictType: string; // 字典类型，全局唯一
+  codeField: string; // 字典ID或者Code字典-Key
+  nameField: string; // 目标设值字段名称（to）
   cacheKey?: string;
-  dictNameField?: string; // 默认取字典的name字段（from），默认值为'name'
+  dictNameField?: string; // 字典名称字段，默认name-Value（from）
 }
 
 
