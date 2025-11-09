@@ -55,17 +55,7 @@ export class DictService {
   /**
    * 根据code获取字典项名称
    */
-  async getNameByCode(key: string, code: string | number): Promise<string> {
-    const dictData = await this.getDictData(key);
-    const definition = this.dictDefinitions.get(key);
-    const codeField = definition?.codeField || 'code';
-    const nameField = definition?.nameField || 'name';
-
-    const item = dictData.find(d => d[codeField] === code);
-    return item ? item[nameField] : '';
-  }
-
-  async getValueByCode(key: string, code: string | number, targetField: string = 'name'): Promise<any> {
+  async getTextByCode(key: string, code: string | number, targetField: string = 'name'): Promise<string> {
     const dictData = await this.getDictData(key);
     const definition = this.dictDefinitions.get(key);
     const codeField = definition?.codeField || 'code';

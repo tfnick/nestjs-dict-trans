@@ -25,10 +25,10 @@ describe('DatabaseFieldTranslation', () => {
       type: 'code',
       key: 'business_unit',
       data: [
-        { id: 1, code: 1, name: '研发中心', unit_code: 'BU001', unit_name: '研发中心', parent_id: undefined, status: 1 },
-        { id: 2, code: 2, name: '销售部', unit_code: 'BU002', unit_name: '销售部', parent_id: undefined, status: 1 },
-        { id: 3, code: 3, name: '财务部', unit_code: 'BU003', unit_name: '财务部', parent_id: undefined, status: 1 },
-        { id: 4, code: 4, name: '前端开发组', unit_code: 'BU004', unit_name: '前端开发组', parent_id: 1, status: 1 }
+        { id: 1, code: 11, name: '研发中心', unit_code: 'BU001', unit_name: '研发中心', parent_id: undefined, status: 1 },
+        { id: 2, code: 22, name: '销售部', unit_code: 'BU002', unit_name: '销售部', parent_id: undefined, status: 1 },
+        { id: 3, code: 33, name: '财务部', unit_code: 'BU003', unit_name: '财务部', parent_id: undefined, status: 1 },
+        { id: 4, code: 44, name: '前端开发组', unit_code: 'BU004', unit_name: '前端开发组', parent_id: 1, status: 1 }
       ],
       codeField: 'id',
       nameField: 'unit_name'
@@ -55,17 +55,17 @@ describe('DatabaseFieldTranslation', () => {
     });
 
     it('应该根据ID翻译出code字段的值', async () => {
-      const result = await translateService.translateFieldTo('business_unit', 1, 'unit_code');
+      const result = await translateService.translateField('business_unit', 1, 'unit_code');
       expect(result).toBe('BU001');
     });
 
     it('应该根据ID翻译出任意字段的值', async () => {
-      const result = await translateService.translateFieldTo('business_unit', 4, 'parent_id');
+      const result = await translateService.translateField('business_unit', 4, 'parent_id');
       expect(result).toBe(1);
     });
 
     it('应该处理不存在的字段', async () => {
-      const result = await translateService.translateFieldTo('business_unit', 1, 'nonexistent_field');
+      const result = await translateService.translateField('business_unit', 1, 'nonexistent_field');
       expect(result).toBeUndefined();
     });
   });
@@ -77,12 +77,12 @@ describe('DatabaseFieldTranslation', () => {
     });
 
     it('应该根据部门ID翻译部门代码', async () => {
-      const result = await translateService.translateFieldTo('department', 2, 'dept_code');
+      const result = await translateService.translateField('department', 2, 'dept_code');
       expect(result).toBe('DEPT002');
     });
 
     it('应该根据部门ID翻译状态字段', async () => {
-      const result = await translateService.translateFieldTo('department', 2, 'status');
+      const result = await translateService.translateField('department', 2, 'status');
       expect(result).toBe(1);
     });
   });
@@ -90,7 +90,7 @@ describe('DatabaseFieldTranslation', () => {
   describe('业务场景演示', () => {
     it('应该支持业务单元ID到代码的翻译', async () => {
       // 场景：在需要显示业务单元代码的地方
-      const unitCode = await translateService.translateFieldTo('business_unit', 4, 'unit_code');
+      const unitCode = await translateService.translateField('business_unit', 4, 'unit_code');
       expect(unitCode).toBe('BU004');
     });
 
@@ -102,7 +102,7 @@ describe('DatabaseFieldTranslation', () => {
 
     it('应该支持父子关系查询', async () => {
       // 场景：需要知道父级业务单元的信息
-      const parentId = await translateService.translateFieldTo('business_unit', 4, 'parent_id');
+      const parentId = await translateService.translateField('business_unit', 4, 'parent_id');
       const parentName = await translateService.translateField('business_unit', parentId);
       
       expect(parentId).toBe(1);
@@ -112,12 +112,12 @@ describe('DatabaseFieldTranslation', () => {
 
   describe('错误处理', () => {
     it('应该处理不存在的字典值', async () => {
-      const result = await translateService.translateFieldTo('business_unit', 999, 'unit_name');
+      const result = await translateService.translateField('business_unit', 999, 'unit_name');
       expect(result).toBe('');
     });
 
     it('应该处理不存在的字典key', async () => {
-      await expect(translateService.translateFieldTo('nonexistent_dict', 1, 'unit_name'))
+      await expect(translateService.translateField('nonexistent_dict', 1, 'unit_name'))
         .rejects.toThrow();
     });
   });
@@ -125,11 +125,11 @@ describe('DatabaseFieldTranslation', () => {
   describe('性能测试', () => {
     it('应该缓存多次查询结果', async () => {
       const startTime1 = Date.now();
-      await translateService.translateFieldTo('business_unit', 1, 'unit_code');
+      await translateService.translateField('business_unit', 1, 'unit_code');
       const duration1 = Date.now() - startTime1;
 
       const startTime2 = Date.now();
-      await translateService.translateFieldTo('business_unit', 1, 'unit_code');
+      await translateService.translateField('business_unit', 1, 'unit_code');
       const duration2 = Date.now() - startTime2;
 
       // 第二次调用应该更快（使用缓存）

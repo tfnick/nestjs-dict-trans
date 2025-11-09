@@ -15,11 +15,11 @@ export class TranslateService {
     const translations = Reflect.getMetadata(TRANSLATE_METADATA_KEY, obj.constructor) || [];
     
     for (const translation of translations) {
-      const { dictType, codeField, nameField } = translation;
+      const { dictType, codeField, nameField, dictNameField } = translation;
       const codeValue = (obj as any)[codeField];
       
       if (codeValue !== undefined && codeValue !== null) {
-        const translatedName = await this.dictService.getNameByCode(dictType, codeValue);
+        const translatedName = await this.dictService.getTextByCode(dictType, codeValue, dictNameField);
         (obj as any)[nameField] = translatedName;
       }
     }
@@ -44,11 +44,7 @@ export class TranslateService {
   /**
    * 手动翻译单个字段
    */
-  async translateField(dictType: string, code: string | number): Promise<string> {
-    return this.dictService.getNameByCode(dictType, code);
-  }
-
-  async translateFieldTo(dictType: string, code: string | number, targetField: string): Promise<any> {
-    return this.dictService.getValueByCode(dictType, code, targetField);
+  async translateField(dictType: string, code: string | number, targetField: string = 'name'): Promise<string> {
+    return this.dictService.getTextByCode(dictType, code, targetField);
   }
 }
