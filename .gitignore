@@ -4,5 +4,6 @@ node_modules/
 .coveage/
 coveage/
 .idea/
-
+dist/
+.dist/
 *.tgz
