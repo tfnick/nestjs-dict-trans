@@ -1,12 +1,16 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { MemoryCacheService } from '../cache/memory-cache.service';
-import { DictDefinition, DictItem } from '../interfaces/dict.interface';
+import { DictDefinition, DictItem, DatabaseDictService, DATABASE_DICT_SERVICE } from '../interfaces/dict.interface';
 
 @Injectable()
 export class DictService {
   private dictDefinitions = new Map<string, DictDefinition>();
 
-  constructor(private cacheService: MemoryCacheService) {}
+  constructor(
+    private cacheService: MemoryCacheService,
+    @Optional() @Inject(DATABASE_DICT_SERVICE) 
+    private databaseDictService?: DatabaseDictService
+  ) {}
 
   /**
    * 注册字典定义
@@ -77,11 +81,18 @@ export class DictService {
   }
 
   /**
-   * 从数据库获取字典数据（需要业务系统实现）
+   * 从数据库获取字典数据
+   * 如果业务系统实现了DatabaseDictService接口，则调用其实现
+   * 否则返回空数组
    */
   private async fetchFromDatabase(definition: DictDefinition): Promise<DictItem[]> {
-    // 这里需要业务系统提供数据库查询实现
-    // 可以通过自定义Provider来注入数据库服务
+    if (this.databaseDictService) {
+      // 调用业务系统实现的数据库查询服务
+      return await this.databaseDictService.fetchFromDatabase(definition);
+    }
+    
+    // 如果没有实现数据库服务，返回空数组
+    console.warn(`DatabaseDictService not implemented for dictionary: ${definition.key}`);
     return [];
   }
 }

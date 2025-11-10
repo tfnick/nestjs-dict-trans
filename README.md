@@ -22,22 +22,37 @@ npm install tfnickc/nestjs-dict-trans
 ### 1. 导入模块
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { DictTranslateModule } from 'nestjs-dict-trans';
+import { Module, OnModuleInit } from '@nestjs/common';
+import { DictTranslateModule, DictService } from 'nestjs-dict-trans';
 
 @Module({
   imports: [
     DictTranslateModule.forRoot({
-      // 模块配置
+      // 可选的全局配置
+      cache: {
+        ttl: 3600, // 缓存时间（秒）
+        max: 1000   // 最大缓存数量
+      }
     }),
   ],
+  providers: [DictInitializerService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private dictInitializerService: DictInitializerService) {}
+
+  async onModuleInit() {
+    // 应用启动时初始化字典数据
+    await this.dictInitializerService.initialize();
+  }
+}
 ```
 
 ### 2. 定义字典数据
 
+在应用启动时直接注册字典定义：
+
 ```typescript
+import { Injectable } from '@nestjs/common';
 import { DictService } from 'nestjs-dict-trans';
 
 @Injectable()
@@ -45,26 +60,36 @@ export class DictInitializerService {
   constructor(private dictService: DictService) {}
 
   async initialize() {
-    // 注册代码字典
+    // 注册代码字典（静态数据）
     this.dictService.registerDefinition({
       type: 'code',
       key: 'gender',
       data: [
         { code: 'M', name: '男' },
-        { code: 'F', name: '女' }
+        { code: 'F', name: '女' },
+        { code: 'U', name: '未知' }
       ],
-      codeField: 'code',
-      nameField: 'name'
+      ttl: 86400 // 缓存24小时
     });
 
-    // 注册数据库字典（需要业务系统实现数据库查询）
+    // 注册数据库字典（动态数据）
     this.dictService.registerDefinition({
       type: 'database',
       key: 'business_unit',
       tableName: 'business_units',
-      codeField: 'id',
-      nameField: 'unit_name',
-      condition: { status: 1 }
+      condition: { status: 1 },
+      ttl: 300 // 缓存5分钟
+    });
+
+    // 注册状态字典
+    this.dictService.registerDefinition({
+      type: 'code',
+      key: 'status',
+      data: [
+        { code: 0, name: '禁用' },
+        { code: 1, name: '启用' },
+        { code: 2, name: '待审核' }
+      ]
     });
   }
 }
@@ -152,16 +177,21 @@ const parentId = await translateService.translateField('business_unit', 4, 'pare
 
 ## 数据库字典集成
 
-### 实现数据库查询
+### 1. 接口化设计（推荐）
+
+模块提供了接口化的数据库查询服务设计，业务系统可以通过实现 `DatabaseDictService` 接口来自定义数据库查询逻辑。
+
+#### 实现数据库查询接口
 
 ```typescript
-import { DictService, DictDefinition } from 'nestjs-dict-trans';
+import { Injectable } from '@nestjs/common';
+import { DatabaseDictService, DictDefinition, DictItem } from 'nestjs-dict-trans';
 
 @Injectable()
-export class DatabaseDictService {
+export class CustomDatabaseDictService implements DatabaseDictService {
   constructor(private dataSource: DataSource) {}
 
-  async fetchFromDatabase(definition: DictDefinition): Promise<any[]> {
+  async fetchFromDatabase(definition: DictDefinition): Promise<DictItem[]> {
     const { tableName, condition } = definition;
     
     const queryBuilder = this.dataSource
@@ -177,7 +207,91 @@ export class DatabaseDictService {
 }
 ```
 
-### 注册数据库字典
+#### 注册数据库服务
+
+```typescript
+import { Module } from '@nestjs/common';
+import { DictTranslateModule, DATABASE_DICT_SERVICE } from 'nestjs-dict-trans';
+
+@Module({
+  imports: [DictTranslateModule.forRoot()],
+  providers: [
+    {
+      provide: DATABASE_DICT_SERVICE,
+      useClass: CustomDatabaseDictService
+    }
+  ]
+})
+export class AppModule {}
+```
+
+#### 在业务系统中使用
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { DictService } from 'nestjs-dict-trans';
+
+@Injectable()
+export class DictInitializerService {
+  constructor(private dictService: DictService) {}
+
+  async initialize() {
+    // 注册数据库字典
+    this.dictService.registerDefinition({
+      type: 'database',
+      key: 'business_unit',
+      tableName: 'business_units',
+      condition: { status: 1 },
+      ttl: 300 // 缓存5分钟
+    });
+  }
+}
+```
+
+#### 设计优势
+
+- **松耦合**: 业务系统只需实现接口，无需修改核心模块
+- **类型安全**: 完整的 TypeScript 类型支持
+- **灵活性**: 支持不同数据库和ORM框架
+- **可扩展**: 支持自定义查询逻辑和缓存策略
+
+### 2. 字段映射和返回值处理
+
+在实现数据库查询时，需要正确处理字段映射和返回值格式：
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { DatabaseDictService, DictDefinition, DictItem } from 'nestjs-dict-trans';
+
+@Injectable()
+export class CustomDatabaseDictService implements DatabaseDictService {
+  constructor(private dataSource: DataSource) {}
+
+  async fetchFromDatabase(definition: DictDefinition): Promise<DictItem[]> {
+    const { tableName, condition, codeField = 'code', nameField = 'name' } = definition;
+    
+    const queryBuilder = this.dataSource
+      .getRepository(tableName)
+      .createQueryBuilder('t');
+    
+    if (condition) {
+      queryBuilder.where(condition);
+    }
+    
+    const results = await queryBuilder.getMany();
+    
+    // 转换为标准 DictItem 格式，保留所有字段用于多字段翻译
+    return results.map(item => ({
+      code: item[codeField],
+      name: item[nameField],
+      ...item // 保留其他字段
+    }));
+  }
+}
+```
+
+### 数据库字典定义
 
 ```typescript
 // 业务单元字典
@@ -185,9 +299,10 @@ this.dictService.registerDefinition({
   type: 'database',
   key: 'business_unit',
   tableName: 'business_units',
-  codeField: 'id',
-  nameField: 'unit_name',
-  condition: { status: 1 }
+  codeField: 'id',      // 指定代码字段
+  nameField: 'name',    // 指定名称字段
+  condition: { status: 1 },
+  ttl: 300 // 缓存5分钟
 });
 
 // 部门字典
@@ -197,7 +312,8 @@ this.dictService.registerDefinition({
   tableName: 'departments',
   codeField: 'id',
   nameField: 'dept_name',
-  condition: { is_active: true }
+  condition: { is_active: true },
+  ttl: 600 // 缓存10分钟
 });
 ```
 
