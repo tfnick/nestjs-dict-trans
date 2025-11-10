@@ -14,7 +14,7 @@
 ## 安装
 
 ```bash
-npm install tfnickc/nestjs-dict-trans
+npm install tfnick/nestjs-dict-trans
 ```
 
 ## 快速开始
@@ -23,7 +23,7 @@ npm install tfnickc/nestjs-dict-trans
 
 ```typescript
 import { Module, OnModuleInit } from '@nestjs/common';
-import { DictTranslateModule, DictService } from 'nestjs-dict-trans';
+import { DictTranslateModule, DictService } from '@tfnick/nestjs-dict-trans';
 
 @Module({
   imports: [
@@ -53,7 +53,7 @@ export class AppModule implements OnModuleInit {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { DictService } from 'nestjs-dict-trans';
+import { DictService } from '@tfnick/nestjs-dict-trans';
 
 @Injectable()
 export class DictInitializerService {
@@ -98,7 +98,7 @@ export class DictInitializerService {
 ### 3. 使用注解翻译
 
 ```typescript
-import { Translate } from 'nestjs-dict-trans';
+import { Translate } from '@tfnick/nestjs-dict-trans';
 
 export class UserDto {
   id: number;
@@ -131,7 +131,7 @@ table business_units(id, code, name, parent_id, status)
 ### 4. 执行翻译
 
 ```typescript
-import { TranslateService } from 'nestjs-dict-trans';
+import { TranslateService } from '@tfnick/nestjs-dict-trans';
 
 @Injectable()
 export class UserService {
@@ -185,7 +185,7 @@ const parentId = await translateService.translateField('business_unit', 4, 'pare
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { DatabaseDictService, DictDefinition, DictItem } from 'nestjs-dict-trans';
+import { DatabaseDictService, DictDefinition, DictItem } from '@tfnick/nestjs-dict-trans';
 
 @Injectable()
 export class CustomDatabaseDictService implements DatabaseDictService {
@@ -211,7 +211,7 @@ export class CustomDatabaseDictService implements DatabaseDictService {
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { DictTranslateModule, DATABASE_DICT_SERVICE } from 'nestjs-dict-trans';
+import { DictTranslateModule, DATABASE_DICT_SERVICE } from '@tfnick/nestjs-dict-trans';
 
 @Module({
   imports: [DictTranslateModule.forRoot()],
@@ -262,7 +262,7 @@ export class DictInitializerService {
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { DatabaseDictService, DictDefinition, DictItem } from 'nestjs-dict-trans';
+import { DatabaseDictService, DictDefinition, DictItem } from '@tfnick/nestjs-dict-trans';
 
 @Injectable()
 export class CustomDatabaseDictService implements DatabaseDictService {
@@ -322,7 +322,7 @@ this.dictService.registerDefinition({
 ### 自定义缓存策略
 
 ```typescript
-import { MemoryCacheService } from 'nestjs-dict-trans';
+import { MemoryCacheService } from '@tfnick/nestjs-dict-trans';
 
 @Injectable()
 export class CustomCacheService extends MemoryCacheService {

@@ -1,5 +1,5 @@
 {
-  "name": "@tfnick/nest-dict-translate",
+  "name": "@tfnick/nestjs-dict-translate",
   "version": "1.0.0",
   "description": "A NestJS module for dictionary translation and caching",
   "main": "dist/index.js",
