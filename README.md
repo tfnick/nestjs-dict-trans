@@ -268,7 +268,12 @@ interface DictDefinition {
 ### 运行测试
 
 ```bash
+# 测试
 npm test
+
+# 生成测试报告
+npm test:cov
+
 ```
 
 ### 测试示例
