@@ -92,11 +92,15 @@ export class UserDto {
   @Translate({
     dictType: 'business_unit',
     codeField: 'unitId', // 指定翻译来源Id字段
-    nameField: 'unitName', 
-    valueField: 'unit_code' // 可选：指定翻译来源Value字段
+    nameField: 'unitName', // 指定翻译目标赋值字段
+    valueField: 'name|code' // 可选：指定获取id=${unitId}时的name或code的值
   })
   unitName?: string;
 }
+```
+
+```sql
+table business_units(id, code, name, parent_id, status)
 ```
 
 ### 4. 执行翻译
