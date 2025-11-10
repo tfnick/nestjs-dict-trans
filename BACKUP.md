@@ -16,5 +16,5 @@ npm install D:\code\nest-dict-translate\tfnick-nest-dict-translate-1.0.0.tgz
 ```
 npm run build
 npm pack
-npm publish
+npm publish --access public
 ```
