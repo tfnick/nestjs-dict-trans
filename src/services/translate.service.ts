@@ -16,12 +16,12 @@ export class TranslateService {
     const translations = Reflect.getMetadata(TRANSLATE_METADATA_KEY, obj.constructor) || [];
     
     for (const translation of translations) {
-      const { dictType, codeField, nameField, dictNameField } = translation;
+      const { dictType, codeField, nameField, valueFiled } = translation;
       const codeValue = (obj as any)[codeField];
       
       if (codeValue !== undefined && codeValue !== null) {
         // 如果没有指定dictNameField，则从字典定义中获取默认的nameField
-        const targetField = dictNameField || this.dictService.getDefinition(dictType)?.nameField || DEFAULT_TRANSLATE_OPTIONS.dictNameField;
+        const targetField = valueFiled || this.dictService.getDefinition(dictType)?.nameField || DEFAULT_TRANSLATE_OPTIONS.valueField;
         const translatedName = await this.dictService.getTextByCode(dictType, codeValue, targetField);
         (obj as any)[nameField] = translatedName;
       }

@@ -92,8 +92,8 @@ export class UserDto {
   @Translate({
     dictType: 'business_unit',
     codeField: 'unitId', // 指定翻译来源Id字段
-    nameField: 'unitName',
-    dictNameField: 'unit_code' // 可选：指定翻译来源Value字段
+    nameField: 'unitName', 
+    valueField: 'unit_code' // 可选：指定翻译来源Value字段
   })
   unitName?: string;
 }

@@ -20,10 +20,10 @@ export interface TranslateOptions {
   codeField: string; // 字典ID或者Code字典-Key
   nameField: string; // 目标设值字段名称（to）
   cacheKey?: string;
-  dictNameField?: string; // 字典名称字段，默认name-Value（from）
+  valueField?: string; // 字典名称字段，默认name-Value（from）
 }
 
 
 export const DEFAULT_TRANSLATE_OPTIONS = {
-  dictNameField: 'name',
+  valueField: 'name',
 } as const;
