@@ -1,15 +1,18 @@
 {
   "name": "@tfnick/nestjs-dict-translate",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A NestJS module for dictionary translation and caching",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "tfnick",
   "license": "MIT",
