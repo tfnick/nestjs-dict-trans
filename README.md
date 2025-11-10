@@ -269,10 +269,10 @@ interface DictDefinition {
 
 ```bash
 # 测试
-npm test
+npm run test
 
 # 生成测试报告
-npm test:cov
+npm run test:cov
 
 ```
 
