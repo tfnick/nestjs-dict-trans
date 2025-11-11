@@ -68,7 +68,8 @@ export class DictService {
     const codeField = definition?.codeField || 'code';
 
     const item = dictData.find(d => d[codeField] === code);
-    return item ? item[targetField] : '';
+    // return item ? item[targetField] : '';
+    return item && targetField in item ? item[targetField] : '';
   }
 
   /**
