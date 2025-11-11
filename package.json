@@ -1,6 +1,6 @@
 {
   "name": "@tfnick/nestjs-dict-translate",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A NestJS module for dictionary translation and caching",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
+import {DynamicModule, Global, Module, Provider} from '@nestjs/common';
 import { DictService } from '../services/dict.service';
 import { TranslateService } from '../services/translate.service';
 import { MemoryCacheService } from '../cache/memory-cache.service';
@@ -9,6 +9,7 @@ export interface DictTranslateModuleOptions {
   databaseProvider?: Provider;
 }
 
+@Global()
 @Module({})
 export class DictTranslateModule {
   static forRoot(options: DictTranslateModuleOptions = {}): DynamicModule {
